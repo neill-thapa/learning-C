@@ -46,5 +46,6 @@ void sort3_desc(int x, int y, int z, int *f, int *s, int *t){
         sort3_desc(r1, r2, r3, &second, &third, &fourth);
 
         printf("Sorted descending: %d %d %d", largest, second, third);
+        
         return 0;
 }
