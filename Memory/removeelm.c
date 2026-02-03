@@ -2,8 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void push_back(int **arr, int *size, int *capacity, int value);
-void pop_back(int **arr, int *size, int index);
+void increase_capacity(int **arr, int *size, int *capacity, int value);
+void remove_element(int **arr, int *size, int index);
+void insert_element(int **arr, int *size, int *capacity, int index, int value);
 
 int main(void)
 {
@@ -26,7 +27,7 @@ int main(void)
         int integer;
         printf("Number %d?: ", i + 1);
         scanf("%d", &integer);
-        push_back(&ptr, &size, &capacity, integer);
+        increase_capacity(&ptr, &size, &capacity, integer);
     }
 
     // print the array
@@ -37,18 +38,17 @@ int main(void)
     }
     printf("\n");
 
-    // array modification
+    // array modification: remove an element
     char ch;
     int index;
-    printf("Do you want to remove an element from the array (y/n)?: ");
-    scanf(" %c", &ch); // ignore the whitespace
-    ch = toupper(ch);
-    if (ch == 'N')
+    do 
     {
-        free(ptr);
-        return 0;
+        printf("Do you want to remove an element from the array (y/n)?: ");
+        scanf(" %c", &ch); // ignore the whitespace
+        ch = toupper(ch);
     }
-    else if (ch == 'Y')
+    while (ch != 'Y' && ch != 'N'); // basic edge case
+    if (ch == 'Y')
     {
         // safety check
         do
@@ -58,24 +58,57 @@ int main(void)
         }
         while (index < 0 || index >= size);
 
-        pop_back(&ptr, &size, index);
+        remove_element(&ptr, &size, index);
 
+        // updated array
+        printf("New array:\n");
+        for (int i = 0; i < size; i++)
+        {
+            printf("%d ", ptr[i]);
+        }
+        printf("\n");
     }
 
-    // updated array
-    printf("New array:\n");
-    for (int i = 0; i < size; i++)
+    // array modification: insert and element
+    int new_el;
+
+    do 
     {
-        printf("%d ", ptr[i]);
+        printf("Do you want to add an element to the array (y/n)?: ");
+        scanf(" %c", &ch); // ignore the whitespace
+        ch = toupper(ch);
     }
-    printf("\n");
+    while (ch != 'Y' && ch != 'N');
+    if (ch == 'Y')
+    {
+        // safety check
+        do
+        {
+            printf("Enter the index you want to add element in: ");
+            scanf("%d", &index);
+        }
+        while (index < 0 || index > size);
+
+        printf("Enter the new number: ");
+        scanf("%d", &new_el);
+
+        insert_element(&ptr, &size, &capacity, index, new_el);
+
+        // updated array
+        printf("New array:\n");
+        for (int i = 0; i < size; i++)
+        {
+            printf("%d ", ptr[i]);
+        }
+        printf("\n");
+    }
 
     free(ptr);
 
     return 0;
 }
 
-void push_back(int **arr, int *size, int *capacity, int value)
+void increase_capacity(int **arr, int *size, int *capacity, int value)
 {
     if (*size == *capacity)
     {
@@ -93,19 +126,47 @@ void push_back(int **arr, int *size, int *capacity, int value)
     (*size)++;
 }
 
-void pop_back(int **arr, int *size, int index)
+void remove_element(int **arr, int *size, int index)
 {
-    for (int i = index; i < *size - 1; i++) // shift element on right beginning from index to step to the left
+    for (int i = index; i < *size - 1; i++) // shift element on right, beginning from index, to the left by 1 step
     {
         *(*arr + i) = *(*arr + (i + 1));
     }
     (*size)--;
 
-    int *temp = realloc(*arr, (*size) * sizeof(int)); // shrink the array according to new size
-    if (temp == NULL)
+    if (*size > 0)
     {
-        return;
+        int *temp = realloc(*arr, (*size) * sizeof(int)); // shrink the array according to new size
+        if (temp == NULL)
+        {
+            return;
+        }
+
+        *arr = temp;
+    }
+}
+
+void insert_element(int **arr, int *size, int * capacity, int index, int value) // for inserting an element at a certain index in the array
+{
+    if (*size == *capacity)
+    {
+        *capacity *= 2;
+        int *temp = realloc(*arr, (*capacity) * sizeof(int));
+        if (temp == NULL)
+        {
+            return;
+        }
+
+        *arr = temp;
     }
 
-    *arr = temp;
+    // shift element to the right starting from the end
+    for (int i = *size; i > index; i--)
+    {
+        *(*arr + i) = *(*arr + (i - 1));
+    }
+    
+    // add element entered by the user at the desired index
+    *(*arr + index) = value;
+    (*size)++;
 }
