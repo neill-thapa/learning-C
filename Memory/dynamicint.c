@@ -9,6 +9,8 @@ float calculate_average(int elements_sum, int size);
 int main(void)
 {   
     int n;
+
+    // basic defense against invalid input
     do 
     {
         printf("How many integers do you want to enter?: ");
