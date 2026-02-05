@@ -7,9 +7,9 @@ int main(void)
 
     printf("Enter 6 numbers:\n");
     
-    for (int i = 0; i < 2; i++)
+    for (int i = 0; i < 2; i++) // loop for the rows
     {
-        for (int j = 0; j < 3; j++)
+        for (int j = 0; j < 3; j++) // loop for the column
         {
             scanf("%d", &arr[i][j]);
         }
