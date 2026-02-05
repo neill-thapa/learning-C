@@ -4,6 +4,7 @@
 int main(void)
 {
     int arr[2][3];
+    int sum = 0;
 
     printf("Enter 6 numbers:\n");
 
@@ -12,15 +13,6 @@ int main(void)
         for (int j = 0; j < 3; j++)
         {
             scanf("%d", &arr[i][j]);
-        }
-    }
-
-    // add every element in the matrix
-    int sum = 0;
-    for (int i = 0; i < 2; i++)
-    {
-        for (int j = 0; j < 3; j++)
-        {
             sum += arr[i][j];
         }
     }
