@@ -42,7 +42,7 @@ int main(void)
                     break;
                 }
             }
-            if (!isIdentity)
+            if (!isIdentity) // if it not an identity, break
             {
                 break;
             }
