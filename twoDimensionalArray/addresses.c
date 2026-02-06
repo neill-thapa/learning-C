@@ -16,13 +16,15 @@ int main(void)
             printf("%p\n", &arr[i][j]);
         }
     }
-
     printf("\n");
+
+    // all point to the same element
     printf("%p\n", arr);
     printf("%p\n", arr[0]);
     printf("%p\n", &arr[0][0]);
-
     printf("\n");
+
+    // all point to the same element
     printf("%p\n", arr[1]);
     printf("%p\n", &arr[1][0]);
 
