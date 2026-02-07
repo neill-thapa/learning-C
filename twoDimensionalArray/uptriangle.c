@@ -1,4 +1,4 @@
-// rotates the matrix 90 degree clockwise
+// check if the matrix is uppertriangular or not
 #include <stdio.h>
 
 int main(void)
@@ -10,16 +10,16 @@ int main(void)
     printf("Enter the number of columns: ");
     scanf("%d", &cols);
 
-    if (rows <= 0 || cols <= 0)
+    if (rows != cols)
     {
-        printf("Invalid matrix size.\n");
+        printf("Invalid size! Rows and columns number should be equal...\n");
         return 1;
     }
 
+    // populate the matrix
     int arr[rows][cols];
 
-    // populate the matrix or 2d array
-    printf("Enter the numbers in the matrix:\n");
+    printf("Enter the number of rows and columns:\n");
     for (int i = 0; i < rows; i++)
     {
         for (int j = 0; j < cols; j++)
@@ -29,27 +29,30 @@ int main(void)
         }
     }
 
-    // print the original matrix
-    printf("Original matrix:\n");
+    // print the matrix
+    printf("The matrix:\n");
     for (int i = 0; i < rows; i++)
     {
         for (int j = 0; j < cols; j++)
         {
             printf("%d  ", arr[i][j]);
         }
-        printf("\n");
+        printf("\n");s
     }
 
-    // print the rotated matrix
-    printf("After 90 degree clockwise rotation:\n");
-    for (int j = 0; j < cols; j++) // column becomes row
+    for (int i = 0; i < rows; i++)
     {
-        for (int i = rows - 1; i >= 0; i--) // buttom to top
+        for (int j = 0; j < i; j++) // check only the lower half of main diagonal
         {
-            printf("%d  ", arr[i][j]);
+            if (arr[i][j] != 0)
+            {
+                printf("The matrix is not upper triangular.\n");
+                return 0;
+            }
         }
-        printf("\n");
     }
+
+    printf("The matrix is upper triangular.\n");
 
     return 0;
 }
