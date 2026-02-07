@@ -10,7 +10,7 @@ int main(void)
     printf("Enter the number of columns: ");
     scanf("%d", &cols);
 
-    if (rows <= 0 || cols <= 0)
+    if (rows <= 0 || cols <= 0) // safety check
     {
         printf("Invalid matrix size.\n");
         return 1;
@@ -18,7 +18,7 @@ int main(void)
 
     // declare and populate the array
     int arr[rows][cols];
-    printf("Enter the numbers in the array:\n");
+    printf("Enter the numbers in the matrix:\n");
     for (int i = 0; i < rows; i++)
     {
         for (int j = 0; j < cols; j++)
