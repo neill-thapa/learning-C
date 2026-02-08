@@ -1,4 +1,4 @@
-// writes 5 integers to a file
+// writes 5 integers to a file called numbers.txt
 #include <stdio.h>
 
 int main(void)
