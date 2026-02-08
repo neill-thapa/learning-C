@@ -54,7 +54,23 @@ int main(void)
             buffer[i] = toupper(buffer[i]);
         }
 
-        printf("%s\n", buffer);
+        // count words
+        int words = 0, inWord = 0;
+        for (int i = 0; buffer[i]; i++)
+        {
+            if (buffer[i] != ' ' && !inWord)
+            {
+                inWord = 1;
+                words++;
+            }
+            else if (buffer[i] == ' ')
+            {
+                inWord = 0;
+            }
+        }
+
+        // print name + word count
+        printf("%s, Word Count: %d\n", buffer, words);
     }
 
     fclose(fp);
