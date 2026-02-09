@@ -53,8 +53,20 @@ int main(void)
         printf("Marks? (Subjects: Physics, Chemistry, and Mathematics):\n");
         for (int j = 0; j < 3; j++ )
         {
-            printf("Enter the marks (%s): ", subjects[j]);
-            scanf("%d", &students[i].marks[j]);
+            int marks;
+            do 
+            {
+                printf("Enter the marks (%s): ", subjects[j]);
+                scanf("%d", &marks);
+
+                if (marks < 0 || marks > 100)
+                {
+                    printf("Invalid marks! Please enter a value between 0 and 100.\n");
+                }
+            }
+            while (marks < 0 || marks > 100);
+
+            students[i].marks[j] = marks;
         }
         printf("\n");
 
