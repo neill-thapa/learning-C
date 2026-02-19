@@ -28,6 +28,7 @@ void saveStudents(Student *arr, int size, const char *filename);
 void loadStudents(Student **arr, int *size, int *capacity, const char *filename);
 void printStudent(const Student *s);
 void deleteStudent(Student *arr, int *size);
+void sortStudents(Student *arr, int size);
 
 int main(void) {
 
@@ -69,6 +70,13 @@ int main(void) {
                 printf("Next steps: Save (3) -> Exit (0) | Add another student (1) -> Save -> Exit\n\n");
                 break;
             case 2:
+                if (size == 0)
+                {
+                    printf("No students...\n");
+                }
+
+                sortStudents(students, size);
+
                 for (int i = 0; i < size; i++)
                 {
                     printStudent(&students[i]);
@@ -287,4 +295,32 @@ void deleteStudent(Student *arr, int *size) {
 
     (*size)--;
 }
+
+// Selection sort
+void sortStudents(Student *arr, int size) {
+    for (int i = 0; i < size - 1; i++) {
+        int maxIndex = i;
+
+        for (int j = i + 1; j < size; j++) {
+            // Primary: higher average
+            if (arr[j].average > arr[maxIndex].average) {
+                maxIndex = j;
+            }
+            // Secondary: same average, sort by name alphabetically
+            else if (arr[j].average == arr[maxIndex].average) {
+                if (strcmp(arr[j].name, arr[maxIndex].name) < 0) {
+                    maxIndex = j;
+                }
+            }
+        }
+
+        if (maxIndex != i) {
+            Student temp = arr[i];
+            arr[i] = arr[maxIndex];
+            arr[maxIndex] = temp;
+        }
+    }
+}
+
+
 
