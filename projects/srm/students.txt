@@ -1,4 +1,5 @@
-102;Iman Gadzhi;100;55;70
+105;Iris Maharjan;100;100;100
 103;Prashun Shrestha;100;100;100
-104;Prashiddha Raj Sharma;50;40;30
+102;Iman Gadzhi;100;55;70
 101;Alex Hormozi;50;65;77
+104;Prashiddha Raj Sharma;50;40;30
