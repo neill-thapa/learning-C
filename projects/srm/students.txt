@@ -1,0 +1,3 @@
+101;Alex Hormozi;95;80;70
+102;Iman Gadzhi;100;55;70
+103;Prashun Shrestha;100;100;100

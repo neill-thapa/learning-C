@@ -3,12 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Function prototypes
-void ensure_capacity(student **arr, int *size, int *capacity);
-void results(student *arr, int index);
-
 #define NUM_SUBJECTS 3
 #define INITIAL_CAPACITY 2
+#define FILENAME "students.txt"
 
 // Data model
 typedef struct {
@@ -19,7 +16,16 @@ typedef struct {
     char grade;
 } Student;
 
-int main(void) {}
+// Function prototypes
+void ensureCapacity(Student **arr, int *size, int *capacity);
+int idExists(Student *arr, int size, int id);
+void inputStudent(Student *arr, int index, int *size);
+void calculateResults(Student *arr, int index);
+void saveStudents(Student *arr, int size, const char *filename);
+void loadStudents(Student **arr, int *size, int *capacity, const char *filename);
+void printStudent(const Student *s);
+
+int main(void) {
 
     // initial memory allocation
     int size = 0, capacity = INITIAL_CAPACITY;
@@ -29,88 +35,131 @@ int main(void) {}
         return 1;
     }
 
-    int number;
-    printf("Enter the number of students: ");
-    scanf("%d", &number);
+    loadStudents(&students, &size, &capacity, FILENAME);
 
-    printf("Enter the student details:\n");
-    for (int i = 0; i < number; i++) {
-        // memeory expansion check
-        ensure_capacity(&students, &size, &capacity);
+    int choice;
+    do {
+        printf("\n --- Student Management System ---\n");
+        printf("Press 1: Add Student\n");
+        printf("Press 2: View All Students\n");
+        printf("Press 3: Save to File\n");
+        printf("Press 0: Exit\n\n");
 
-        // input
-        printf("Student %d:\n", i + 1);
-        printf("Id?: ");
-        scanf("%d", &students[i].id);
-
-        getchar(); // clear the buffer
-
-        printf("Name of the student?: ");
-        fgets(students[i].name, sizeof(students[i].name), stdin);
-        students[i].name[strcspn(students[i].name, "\n")] = '\0'; // remove the newline
-
-        printf("Marks? (Subjects: Physics, Chemistry, and Mathematics):\n");
-        for (int j = 0; j < 3; j++ )
-        {
-            int marks;
-            do {
-                printf("Enter the marks (%s): ", subjects[j]);
-                scanf("%d", &marks);
-
-                if (marks < 0 || marks > 100) {
-                    printf("Invalid marks! Please enter a value between 0 and 100.\n");
-                }
+        do {
+            printf("Enter your choice: ");
+            scanf("%d", &choice);
+            getchar(); // clear the buffer (newline)
+            if (choice < 0 || choice > 3) {
+                printf("Please enter only the available choices from the menu...\n");
             }
-            while (marks < 0 || marks > 100);
-
-            students[i].marks[j] = marks;
-        }
-        printf("\n");
-
-        size++;
-    }
-
-    for (int i = 0; i < size; i++) { 
-        results(students, i); // function call to compute the operations
-    }
-
-    // print details
-    printf("Student Record:\n");
-    for (int i = 0; i < size; i++) {
-        printf("Id: %d, Name: %s\n", students[i].id, students[i].name);
-        for (int j = 0; j < 3; j++) {
-            printf("Scored %d in %s\n", students[i].marks[j], subjects[j]);
-        }
-        printf("Average: %.2f, Grade: %c\n", students[i].average, students[i].grade);
+        } while (choice < 0 || choice > 3);
 
         printf("\n");
-    }
+
+        switch (choice) {
+            case 1:
+                ensureCapacity(&students, &size, &capacity);
+                inputStudent(students, size, &size);
+                size++;
+                printf("Next steps: Save (3) -> Exit (0) | Add another student (1) -> Save -> Exit\n\n");
+                break;
+            case 2:
+                for (int i = 0; i < size; i++)
+                {
+                    printStudent(&students[i]);
+                }
+                printf("Next steps: Add (1) -> Save (3) -> Exit (0) | Exit directly (0)\n\n");
+                break;
+            case 3:
+                saveStudents(students, size, FILENAME);
+                printf("Data saved successfully...\n");
+                printf("Next steps: Add (1) -> Save (3) -> Exit (0) | Exit directly (0)\n\n");
+                break;
+            case 0:
+                saveStudents(students, size, FILENAME);
+                printf("Exiting...\n");
+                break;
+            default :
+                printf("Invalid choice...\n");
+        }
+    } while (choice != 0);
 
     free(students); // free the memory
-
     return 0;
 }
 
-void ensure_capacity(student **arr, int *size, int *capacity) {
-    if (*size == *capacity) {
+// Memory management
+void ensureCapacity(Student **arr, int *size, int *capacity) {
+    if (*size >= *capacity) {
         *capacity *= 2;
-        student *temp = realloc(*arr, (*capacity) * sizeof(student));
-        if (temp == NULL) {
+        Student *temp = realloc(*arr, (*capacity) * sizeof(Student));
+        if (!temp) {
             printf("Memory allocation failed.\n");
-            return;
+            exit(1); // critical failure
         }
-
         *arr = temp;
     }
 }
 
-void results(student *arr, int index) {
-    int sum = 0;
-    for (int j = 0; j < 3; j++) {
-        sum += arr[index].marks[j];
+// Check for id
+int idExists(Student *arr, int size, int id) {
+    for (int i = 0; i < size; i++) {
+        if (arr[i].id == id) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+// Input details
+void inputStudent(Student *arr, int index, int *size) {
+    char subjects[NUM_SUBJECTS][20] = {"Physics", "Chemistry", "Mathematics"};
+
+    // input ID
+    int id;
+    do {
+        printf("Enter student ID: ");
+        scanf("%d", &id);
+        getchar(); // clear newline
+        if (idExists(arr, *size, id)) {
+            printf("ID already exists. Enter a unique ID.\n");
+        }
+    } while (idExists(arr, *size, id));
+    arr[index].id = id;
+
+    // input Name
+    do {
+        printf("Enter student Name: ");
+        fgets(arr[index].name, sizeof(arr[index].name), stdin);
+        arr[index].name[strcspn(arr[index].name, "\n")] = '\0'; // remove newline from fgets
+        if (strlen(arr[index].name) == 0) {
+            printf("Name cannot be empty.\n");
+        }
+    } while (strlen(arr[index].name) == 0);
+
+    // input Marks
+    for (int j = 0; j < NUM_SUBJECTS; j++) {
+        int marks;
+        do {
+            printf("Enter marks for %s (0-100): ", subjects[j]);
+            scanf("%d", &marks);
+            if (marks < 0 || marks > 100){
+                printf("Invalid marks! Must be between 0 and 100.\n");
+            }
+        } while (marks < 0 || marks > 100);
+        arr[index].marks[j] = marks;
     }
 
-    arr[index].average = sum / 3.0;
+    calculateResults(arr, index);
+}
+
+// Logic function
+void calculateResults(Student *arr, int index) {
+    int sum = 0;
+    for (int j = 0; j < NUM_SUBJECTS; j++) {
+        sum += arr[index].marks[j];
+    }
+    arr[index].average = sum / (float)NUM_SUBJECTS;
 
     if (arr[index].average >= 90) {
         arr[index].grade = 'A';
@@ -129,16 +178,55 @@ void results(student *arr, int index) {
     }
 }
 
-void write_students(student *arr, int size, const char *filename) {
+// Write into file
+void saveStudents(Student *arr, int size, const char *filename) {
     FILE *fp = fopen(filename, "w");
     if (!fp) {
-        printf("Error opening file for writing.\n");
+        printf("Failed to open file for writing.\n");
         return;
     }
 
     for (int i = 0; i < size; i++) {
-        fprintf(fp, "%d;%s;%d;%d;%d\n", arr[i].id, arr[i].name, arr[i].marks[0], arr[i].marks[1], arr[i].marks[2]);
+        fprintf(fp, "%d;%s;%d;%d;%d\n", arr[i].id, arr[i].name,
+                arr[i].marks[0], arr[i].marks[1], arr[i].marks[2]);
     }
 
     fclose(fp);
+}
+
+// Read from file
+void loadStudents(Student **arr, int *size, int *capacity, const char *filename) {
+    FILE *fp = fopen(filename, "r");
+   if (!fp) return; // no file yet
+
+    char line[200];
+    while (fgets(line, sizeof(line), fp)) {
+        ensureCapacity(arr, size, capacity); // ensure there is space before adding a student back to program
+
+        char *token = strtok(line, ";"); // split lines into parts separated by semicolon
+        (*arr)[*size].id = atoi(token);
+
+        token = strtok(NULL, ";"); // NULL -> continue from where last token ended
+        strcpy((*arr)[*size].name, token);
+
+        for (int j = 0; j < NUM_SUBJECTS; j++) {
+            token = strtok(NULL, ";");
+            (*arr)[*size].marks[j] = atoi(token);
+        }
+
+        calculateResults(*arr, *size);
+        (*size)++;
+    }
+
+    fclose(fp);
+}
+
+// Utility
+void printStudent(const Student *s) {
+    char subjects[NUM_SUBJECTS][20] = {"Physics", "Chemistry", "Mathematics"};
+    printf("ID: %d, Name: %s\n", s->id, s->name);
+    for (int j = 0; j < NUM_SUBJECTS; j++) {
+        printf("  %s: %d\n", subjects[j], s->marks[j]);
+    }
+    printf("Average: %.2f, Grade: %c\n\n", s->average, s->grade);
 }
